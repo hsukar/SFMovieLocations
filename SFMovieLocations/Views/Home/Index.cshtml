@@ -1,0 +1,129 @@
+﻿@{
+    ViewBag.Title = "San Francisco Movie Locations";
+    ViewBag.Message = "Search now!";
+}
+
+@section featured {
+    <section class="featured">
+        <div class="content-wrapper">
+            <hgroup class="title">
+                <h1>@ViewBag.Title.</h1>
+                <h2>@ViewBag.Message</h2>
+            </hgroup>
+        </div>
+    </section>
+}
+
+<input type="text" id="title" class="text" placeholder="Filter by Movie Title" />   
+<input type="button" id="filter" value="go" onclick="filterMarkersByTitle()" />
+<input type="button" id="reset" value="reset map" onclick="init()" />
+<div id="map-canvas" />
+
+<script type="text/javascript">
+    // AUTOCOMPLETE
+    // queries prefix search for autocomplete movie titles
+    $('#title').autocomplete({
+        source: function (request, response) {
+            $.ajax({
+                url: '/SFMovieLocations/Search',
+                data: { prefix: request.term },
+                dataType: 'json',
+                type: 'GET',
+                cache: false,
+                success: function (data) {
+                    response($.map(data, function (sfmovielocation) {
+                        return {
+                            label: sfmovielocation.Title,
+                            value: sfmovielocation.ID
+                        }
+                    }));
+                }
+            })
+        },
+        select: function (event, ui) {
+            $('#title').val(ui.item.label);
+            $('#Id').val(ui.item.value);
+            return false;
+        },
+        minLength: 1
+    });
+
+    // MAPS
+    var map;
+    var markers = [];
+
+    // initializes map and sets all markers
+    function init() {
+        map = new google.maps.Map(document.getElementById('map-canvas'), {
+            center: new google.maps.LatLng(37.790234970864, -122.39031314844),
+            zoom: 12,
+            mapTypeId: google.maps.MapTypeId.ROADMAP
+        });
+
+        setAllMarkers();
+    }
+
+    // queries all sfmovielocations and sets all markers
+    function setAllMarkers() {
+        $.getJSON("/SFMovieLocations", function (sfmovielocations) {
+            setMarkers(sfmovielocations);
+        });
+    }
+
+    // filters markers by movie title
+    function filterMarkersByTitle() {
+        var title = document.getElementById('title').value;
+        $.getJSON("/SFMovieLocations/MovieTitles?title=" + title, function (sfmovielocations) {
+            clearAllMarkers();
+            setMarkers(sfmovielocations);
+        });
+    }
+
+    // removes all markers
+    function clearAllMarkers() {
+        for (i = 0; i < markers.length; i++) {
+            markers[i].setMap(null);
+        }
+
+        markers = [];
+    }
+
+    // set markers from param sfmovielocations
+    function setMarkers(sfmovielocations) {
+        $.each(sfmovielocations, function (key, data) {
+            // set marker
+            var latLng = new google.maps.LatLng(data.LocationLat, data.LocationLng);
+
+            var marker = new google.maps.Marker({
+                position: latLng,
+                map: map,
+                title: data.Title
+            });
+
+            // set info window for marker
+            var contentString = '<div id="content">' +
+                                    '<b>Title:</b> ' + data.Title + '<br/>' +
+                                    '<b>Release Year:</b> ' + data.ReleaseYear + '<br/>' +
+                                    '<b>Location Name:</b> ' + data.LocationName + '<br/>' +
+                                    '<b>Location Coordinates:</b> (' + data.LocationLat + ',' + data.LocationLng + ')<br/>' +
+                                    '<b>Director:</b> ' + (data.Director == null ? "N/A" : data.Director) + '<br/>' +
+                                    '<b>Writer:</b> ' + (data.Writer == null ? "N/A" : data.Writer) + '<br/>' +
+                                    '<b>Fun Fact(s):</b> ' + (data.FunFacts == null ? "N/A" : data.FunFacts) + '<br/>' +
+                                '</div>'
+
+            var infowindow = new google.maps.InfoWindow({
+                content: contentString
+            });
+
+            google.maps.event.addListener(marker, 'click', function () {
+                infowindow.open(map, marker);
+            });
+
+            markers.push(marker);
+        });
+    }
+
+    google.maps.event.addDomListener(window, 'load', init);
+</script>
+
+

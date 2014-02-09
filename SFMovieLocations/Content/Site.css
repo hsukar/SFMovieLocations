@@ -1,0 +1,91 @@
+﻿html {
+    background-color: #e2e2e2;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    background-color: #fff;
+    border-top: solid 10px #000;
+    color: #333;
+    font-size: .85em;
+    font-family: "Segoe UI", Verdana, Helvetica, Sans-Serif;
+    margin: 0;
+    padding: 0;
+}
+
+.float-left {
+    float: left;
+}
+
+.float-right {
+    float: right;
+}
+
+/* main layout
+----------------------------------------------------------*/
+.content-wrapper {
+    margin: 0 auto;
+    max-width: 960px;
+}
+
+#body {
+    background-color: #efeeef;
+    clear: both;
+    padding-bottom: 35px;
+}
+
+.main-content {
+    background: url("../Images/heroAccent.png") no-repeat;
+    padding-left: 10px;
+    padding-top: 30px;
+}
+
+header {
+    padding-top: 20px; 
+}
+
+footer {
+    clear: both;
+    background-color: #e2e2e2;
+    font-size: .8em;
+    height: 100px;
+}
+
+/* site title
+----------------------------------------------------------*/
+.site-title {
+    color: #c8c8c8;
+    font-family: Rockwell, Consolas, "Courier New", Courier, monospace;
+    font-size: 2.3em;
+    margin: 0;
+}
+
+/* page elements
+----------------------------------------------------------*/
+/* map */
+#map-canvas {
+    height: 500px;
+}
+
+/* featured */
+.featured {
+    background-color: #fff;
+}
+
+.featured .content-wrapper {
+    background-color: #7ac0da;
+    padding: 20px 40px 30px 40px;
+}
+
+/* page titles */
+hgroup.title {
+    margin-bottom: 10px;
+    color: #fff;
+}
+
+hgroup.title h1, hgroup.title h2 {
+    display: inline;
+}
+
+
